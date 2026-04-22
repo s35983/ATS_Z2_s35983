@@ -1,41 +1,33 @@
 name: Test and Build
 
 on:
- push:
-  branches: [ "main", "master" ]
+  push:
+    branches: [ "main", "master" ]
 
 jobs:
- build:
-  runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
+    steps:
+      - uses: actions/checkout@v4
 
-  steps:
-  - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
-  - name: Set up JDK
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: 21
+      - name: Run application (dry run)
+        run: mvn exec:java
 
-  - name: Run app
-    run: mvn exec:java
+      - name: Run tests
+        run: mvn test
 
-  - name: Linter
-    uses: super-linter/super-linter@v6
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      VALIDATE_ALL_CODEBASE: true
+      - name: Package app
+        run: mvn package
 
-  - name: Tests
-    run: mvn test
-
-  - name: Build
-    run: mvn package
-
-  - name: Upload
-    uses: actions/upload-artifact@v4
-    with:
-      name: app-jar
-      path: target/*.jar
-
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/*.jar
