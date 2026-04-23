@@ -11,11 +11,18 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class GradebookTest {
-    // Poprawa: Usunięcie modyfikatora static tam gdzie niepotrzebny. Obiekt jest teraz instancyjny,co zapobiega współdzieleniu stanu między testami.
+public final class GradebookTest {
+
+    // Poprawa: Usunięcie modyfikatora static tam gdzie niepotrzebny.
+    // Obiekt jest teraz instancyjny, co zapobiega współdzieleniu stanu między testami.
     private Gradebook gradebook;
 
-    @BeforeEach // Poprawa: zmiana z BeforeAll, każdy test ma swój własny, świeży Gradebook
+    private static final double FIVE = 5.0;
+    private static final double FOUR = 4.0;
+    private static final double SIX = 6.0;
+    private static final double DELTA = 0.001;
+
+    @BeforeEach
     public void setUp() {
         gradebook = new Gradebook();
     }
@@ -23,88 +30,112 @@ public class GradebookTest {
     @Test
     public void testAddSubject() {
         gradebook.addSubject("Physics");
-        List<String> expectedList = List.of("Physics");
+        final List<String> expectedList = List.of("Physics");
         assertEquals(expectedList, gradebook.getSubjects());
     }
 
     @Test
     public void testAddGradeToSubject() {
         gradebook.addSubject("Math");
-        gradebook.addGrade("Math", 5.0);
-        Map<String, List<Double>> expectedMap = new HashMap<>();
-        expectedMap.put("Math", List.of(5.0));
+        gradebook.addGrade("Math", FIVE);
+
+        final Map<String, List<Double>> expectedMap = new HashMap<>();
+        expectedMap.put("Math", List.of(FIVE));
+
         assertEquals(expectedMap, gradebook.getGrades());
     }
 
     @TestFactory
     Stream<DynamicTest> dynamicTestsForSubjects() {
-        // Przygotowanie danych, dynamiczne testy dla przedmiotów
-        List<String> testSubjects = List.of("Math", "Chemistry", "Biology", "Physics", "History");
+
+        final List<String> testSubjects = List.of(
+                "Math", "Chemistry", "Biology", "Physics", "History"
+        );
+
         testSubjects.forEach(gradebook::addSubject);
 
         return testSubjects.stream().map(subject ->
-                DynamicTest.dynamicTest("Test for subject: " + subject, () -> {
-                    // 1. Dodanie ocen
-                    gradebook.addGrade(subject, 4.0);
-                    gradebook.addGrade(subject, 6.0);
+                DynamicTest.dynamicTest(
+                        "Test for subject: " + subject,
+                        () -> {
+                            gradebook.addGrade(subject, FOUR);
+                            gradebook.addGrade(subject, SIX);
 
-                    // 2. Sprawdzenie czy oceny zostały dodane poprawnie
-                    assertEquals(2, gradebook.getGrades().get(subject).size(),
-                            " Test amount of grades for subject: %s".formatted(subject));
+                            assertEquals(
+                                    2,
+                                    gradebook.getGrades().get(subject).size(),
+                                    "Test amount of grades for subject: %s".formatted(subject)
+                            );
 
-                    // 3. Sprawdzenie średniej czy poprawnie policzona  ( (4.0 + 6.0) / 2 = 5.0 )
-                    double expectedAverage = 5.0;
-                    double actualAverage = gradebook.calcAvgForSubject(subject);
-                    assertEquals(expectedAverage, actualAverage, 0.001,
-                            "Grade average test for subject: %s".formatted(subject));
-                })
+                            final double expectedAverage = FIVE;
+                            final double actualAverage =
+                                    gradebook.calcAvgForSubject(subject);
+
+                            assertEquals(
+                                    expectedAverage,
+                                    actualAverage,
+                                    DELTA,
+                                    "Grade average test for subject: %s"
+                                            .formatted(subject)
+                            );
+                        }
+                )
         );
     }
 
     @TestFactory
     Stream<DynamicTest> dynamicTestsForTotalAverage() {
+
         return Stream.of(
-                new Object[]{List.of(4.0, 2.0, 5.0), 3.67},
+                new Object[]{List.of(FOUR, 2.0, FIVE), 3.67},
                 new Object[]{List.of(3.0, 3.0, 3.0), 3.0}
         ).map(data ->
-                DynamicTest.dynamicTest("Average test: " + data[1], () -> {
+                DynamicTest.dynamicTest(
+                        "Average test: " + data[1],
+                        () -> {
 
-                    Gradebook gb = new Gradebook();
-                    gb.addSubject("Test");
+                            final Gradebook gb = new Gradebook();
+                            gb.addSubject("Test");
 
-                    for (double g : (List<Double>) data[0]) {
-                        gb.addGrade("Test", g);
-                    }
+                            for (double g : (List<Double>) data[0]) {
+                                gb.addGrade("Test", g);
+                            }
 
-                    double result = gb.calcAvgForAllSubjects();
-                    assertEquals((double) data[1], result, 0.01);
-                })
+                            final double result = gb.calcAvgForAllSubjects();
+
+                            assertEquals((double) data[1], result, 0.01);
+                        }
+                )
         );
     }
 
-    //Testy DODATKOWE
+    // Testy DODATKOWE
+
     @Test
     public void testAddGradeToNonExistingSubject() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            gradebook.addGrade("Unknown", 5.0);
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> gradebook.addGrade("Unknown", FIVE)
+        );
     }
 
     @Test
     public void testCalcAvgForEmptySubject() {
         gradebook.addSubject("Math");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            gradebook.calcAvgForSubject("Math");
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> gradebook.calcAvgForSubject("Math")
+        );
     }
 
     @Test
     public void testCalcAvgForAllSubjectsNoGrades() {
         gradebook.addSubject("Math");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            gradebook.calcAvgForAllSubjects();
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> gradebook.calcAvgForAllSubjects()
+        );
     }
 }

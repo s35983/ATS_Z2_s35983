@@ -3,7 +3,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Gradebook {
+public final class Gradebook {
+
     private final List<String> subjects;
     private final Map<String, List<Double>> subjectsGrades;
 
@@ -12,32 +13,43 @@ public class Gradebook {
         this.subjectsGrades = new HashMap<>();
     }
 
-    public void addSubject(String subject) {
+    public void addSubject(final String subject) {
         subjects.add(subject);
         subjectsGrades.put(subject, new ArrayList<>());
     }
 
-    public void addGrade(String subject, double grade) {
+    public void addGrade(final String subject, final double grade) {
         if (subjectsGrades.containsKey(subject)) {
             // Poprawa: usunąłem warunek blokujący Historię
             subjectsGrades.get(subject).add(grade);
         } else {
-            throw new IllegalArgumentException(subject + " not found in list of subjects");
+            throw new IllegalArgumentException(
+                    subject + " not found in list of subjects"
+            );
         }
     }
 
-    public double calcAvgForSubject(String subject) {
+    public double calcAvgForSubject(final String subject) {
         if (subjectsGrades.containsKey(subject)) {
-            List<Double> grades = subjectsGrades.get(subject);
-            double subjectGradeSum = grades.stream().mapToDouble(Double::doubleValue).sum();
-            int subjectGradeCount = grades.size();
+            final List<Double> grades = subjectsGrades.get(subject);
+            final double subjectGradeSum = grades.stream()
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+            final int subjectGradeCount = grades.size();
+
             if (subjectGradeCount > 0) {
-                return Math.round((subjectGradeSum / subjectGradeCount) * 100.0) / 100.0;
+                return Math.round(
+                        (subjectGradeSum / subjectGradeCount) * 100.0
+                ) / 100.0;
             } else {
-                throw new IllegalArgumentException("No grades found for subject");
+                throw new IllegalArgumentException(
+                        "No grades found for subject"
+                );
             }
         } else {
-            throw new IllegalArgumentException("Subject not in subjects");
+            throw new IllegalArgumentException(
+                    "Subject not in subjects"
+            );
         }
     }
 
