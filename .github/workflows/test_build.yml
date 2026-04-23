@@ -8,6 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +25,7 @@ jobs:
 
       - name: Run tests
         run: mvn test
+
       - name: Run Super-Linter
         uses: super-linter/super-linter@v6
         env:
