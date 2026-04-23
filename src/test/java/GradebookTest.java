@@ -1,6 +1,4 @@
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;// zamina z BeforeAll
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -9,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GradebookTest {
     // Poprawa: Usunięcie modyfikatora static tam gdzie niepotrzebny. Obiekt jest teraz instancyjny,co zapobiega współdzieleniu stanu między testami.
@@ -78,7 +79,9 @@ public class GradebookTest {
                     double result = gb.calcAvgForAllSubjects();
                     assertEquals((double) data[1], result, 0.01);
                 })
-        );}
+        );
+    }
+
     //Testy DODATKOWE
     @Test
     public void testAddGradeToNonExistingSubject() {

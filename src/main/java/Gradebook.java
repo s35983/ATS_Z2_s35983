@@ -40,8 +40,9 @@ public class Gradebook {
             throw new IllegalArgumentException("Subject not in subjects");
         }
     }
-           // Błąd: metoda zwracała Map zamiast jednej średniej i nie była zaimplementowana
-          // Poprawa: zmiana na double i obliczenie średniej ze wszystkich ocen
+
+    // Błąd: metoda zwracała Map zamiast jednej średniej i nie była zaimplementowana
+    // Poprawa: zmiana na double i obliczenie średniej ze wszystkich ocen
     public double calcAvgForAllSubjects() {
         double sum = 0;
         int count = 0;
@@ -63,6 +64,7 @@ public class Gradebook {
     public List<String> getSubjects() {
         return subjects;
     }
+
     public Map<String, List<Double>> getGrades() {
         return subjectsGrades;
     }
