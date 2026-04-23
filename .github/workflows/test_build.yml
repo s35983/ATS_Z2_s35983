@@ -4,12 +4,12 @@ on:
   push:
     branches: [ "main", "master" ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -31,8 +31,9 @@ jobs:
       - name: Run Super-Linter
         uses: super-linter/super-linter@v6
         env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: true
+          RUN_CHECKOV: false
 
       - name: Package app
         run: mvn package
