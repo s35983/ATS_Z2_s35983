@@ -22,6 +22,11 @@ jobs:
 
       - name: Run tests
         run: mvn test
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v6
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         VALIDATE_ALL_CODEBASE: true
 
       - name: Package app
         run: mvn package
