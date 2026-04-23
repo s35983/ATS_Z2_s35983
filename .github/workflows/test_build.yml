@@ -34,8 +34,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: true
           RUN_CHECKOV: false
-          VALIDATE_JAVA: false
-          VALIDATE_GOOGLE_JAVA_FORMAT: false
+
 
       - name: Package app
         run: mvn package
